@@ -1,20 +1,17 @@
 package org.murilonerdx.dynamodb.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
-import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
+import lombok.*;
+import org.murilonerdx.dynamodb.controller.ScoreDto;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.*;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @DynamoDbBean
-@NoArgsConstructor
+@Builder(toBuilder = true)
 @AllArgsConstructor
+@NoArgsConstructor
 @Setter
 public class PlayerHistory {
 	private String username;
@@ -28,7 +25,6 @@ public class PlayerHistory {
 		return username;
 	}
 
-
 	@DynamoDbAttribute("game_id")
 	@DynamoDbSortKey
 	public UUID getGameId() {
@@ -36,7 +32,7 @@ public class PlayerHistory {
 	}
 
 
-	@DynamoDbAttribute("game_id")
+	@DynamoDbAttribute("score")
 	public Double getScore() {
 		return score;
 	}
@@ -44,5 +40,14 @@ public class PlayerHistory {
 	@DynamoDbAttribute("created_at")
 	public Instant getCreatedAt() {
 		return createdAt;
+	}
+
+	public static PlayerHistory fromScore(String username, ScoreDto scoreDTO){
+		return PlayerHistory.builder()
+				.score(scoreDTO.score())
+				.gameId(UUID.randomUUID())
+				.createdAt(Instant.now())
+				.username(username)
+				.build();
 	}
 }
